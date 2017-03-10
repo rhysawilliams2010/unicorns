@@ -21,7 +21,12 @@ exports.handler = (event, context, callback) => {
                     if(err){
                         callback(err, null)
                     }
-                    callback(null, "OK");
+                    messageProcessed(event.Id, (err,data)=>{
+                        if(err){
+                            callback(err, null)
+                        }
+                        callback(null, "OK");
+                    });
                 });
             }
         });
@@ -78,4 +83,32 @@ function submitScore(id, message, callback) {
     });
     req.write(message);
     req.end();
+}
+
+function messageProcessed(id, callback){
+var params = {
+    TableName:"Message",
+    Key:{
+        "Id" : {"S":id.toString},
+        "PartNumber": {"N": "0"},
+    },
+    ExpressionAttributeNames: {
+        "#MessageProcessed": "MessageProcessed"
+    }
+    UpdateExpression: "SET #MessageProcessed = :m",
+    ExpressionAttributeValues:{
+        ":m" :{B:"true"}
+    },
+    ReturnValues:"UPDATED_NEW"
+};
+console.log("Updating the item...");
+docClient.update(params, function(err, data) {
+    if (err) {
+        console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+        callback(err)
+    } else {
+        console.log("UpdateItem succeeded:", JSON.stringify(data, null, 2));
+        callback(null,"OK")
+    };
+};
 }
