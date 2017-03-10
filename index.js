@@ -32,8 +32,7 @@ function savePart(event, callback){
     const params = {
         TableName : "Message",
         Item: {
-            "Id" : {"S":event.Id},
-            "TotalParts": {"N": event.TotalParts.toString()},
+            "Id" : {"S": event.Id},
             "PartNumber" : {"N": event.PartNumber.toString()},
             "Data" : {"S": event.Data}
         }

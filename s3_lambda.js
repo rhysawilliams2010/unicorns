@@ -4,7 +4,7 @@ console.log('Loading function');
 
 const aws = require('aws-sdk');
 
-const s3 = new aws.S3({ apiVersion: '2006-03-01' });
+const s3 = new aws.S3({apiVersion: '2006-03-01'});
 const lambda = new aws.Lambda();
 
 
@@ -25,21 +25,21 @@ exports.handler = (event, context, callback) => {
             console.log(message);
             callback(message);
         } else {
-            const e = data.Body;
-            const params = {
+            const e = data.Body.toString('utf8');
+            const lp = {
                 FunctionName: 'unicorn',
                 Payload: JSON.stringify(e, null, 2) // pass params
             };
-            lambda.invoke(params, function(error, data) {
+            lambda.invoke(lp, function (error, data) {
                 if (error) {
                     callback(error);
                 }
-                console.log("invoked unicorn", );
-                s3.deleteObject(params, function(err, data) {
-                    if (err){
+                console.log("invoked unicorn", lp);
+                s3.deleteObject(params, function (err, data) {
+                    if (err) {
                         callback(err);
                     }
-                    else{
+                    else {
                         callback(null, "OK");
                     }
                 });
